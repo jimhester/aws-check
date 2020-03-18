@@ -8,7 +8,14 @@
 
 # Local usage
 
-First generate the list of reverse dependencies for a given package and save it to a file (here `pkgs`)
+Get a dev version of a package and build a tarball for it
+
+```shell
+git clone --depth 1 https://github.com/tidyverse/glue.git /tmp/glue
+R CMD build /tmp/glue .
+```
+generate the list of reverse dependencies for a given package and save it to a file (here `pkgs`)
+
 ```shell
 Rscript -e 'writeLines(tools::package_dependencies("glue", reverse = TRUE)[[1]], "pkgs")'
 ```
