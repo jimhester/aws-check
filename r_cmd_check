@@ -1,0 +1,41 @@
+#!/bin/sh
+set -eu
+
+LINE=$((AWS_BATCH_JOB_ARRAY_INDEX + 1))
+CHECK_PKG_NAME=$(sed -n ${LINE}p ${CHECK_PKG_LIST})
+
+echo "--- Starting checks for $CHECK_PKG_NAME ---"
+
+#CHECK_PKG_TARBALL=$(Rscript -e "cat(download.packages('${CHECK_PKG_NAME}', '.', repos = 'https://cloud.r-project.org')[[2]])")
+
+R -e 'library("remotes", lib.loc = "/tmp/tools")' \
+  -e "remotes::install_deps('${CHECK_PKG_TARBALL}', dependencies = TRUE)"
+
+OLD_DIR=${CHECK_PKG_NAME}/old
+NEW_DIR=${CHECK_PKG_NAME}/new
+
+mkdir -p "${OLD_DIR}"
+
+DEV_PKG_NAME=$(basename "${DEV_PKG_TARBALL}" | sed 's/_.*//')
+
+CRAN_PKG_TARBALL=$(Rscript -e "cat(download.packages('${DEV_PKG_NAME}', '${OLD_DIR}', repos = 'https://cloud.r-project.org')[[2]])")
+
+R_LIBS=${OLD_DIR} R -e 'library("remotes", lib.loc = "/tmp/tools")' \
+             -e "remotes::install_local('${CRAN_PKG_TARBALL}')"
+
+R_LIBS=${OLD_DIR} R CMD check -o "${OLD_DIR}" "${CHECK_PKG_TARBALL}" ${CHECK_ARGS} || true
+
+mkdir -p "${NEW_DIR}"
+
+R_LIBS=${NEW_DIR} R -e 'library("remotes", lib.loc = "/tmp/tools")' \
+             -e "remotes::install_local('${DEV_PKG_TARBALL}')"
+
+R_LIBS="${NEW_DIR}" R CMD check -o "${NEW_DIR}" "${CHECK_PKG_TARBALL}" ${CHECK_ARGS}
+
+set +u
+echo "Copying ${CHECK_PKG_NAME} to S3 at s3://${OUTPUT_S3_PATH}/${CHECK_PKG_NAME} ..."
+if [ ! -z "$OUTPUT_S3_PATH" ]; then
+  aws s3 cp "./${CHECK_PKG_NAME}" "s3://${OUTPUT_S3_PATH}/${CHECK_PKG_NAME}" --region "${AWS_REGION}"
+fi
+
+echo "--- Finished checks for $CHECK_PKG_NAME ---"
