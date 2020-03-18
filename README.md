@@ -1,10 +1,10 @@
 # Important environment variabless
 
-- DEV_PKG_TARBALL - the development package we are running reverse dependency checks for
-- CHECK_PKG_LIST - the package(s) we are checking against
-- AWS_BATCH_JOB_ARRAY_INDEX - the AWS environment variable set by the array job
-- AWS_REGION - The AWS region
-- OUTPUT_S3_PATH - The output S3 path
+- `DEV_PKG_TARBALL` - the development package we are running reverse dependency checks for
+- `CHECK_PKG_LIST` - the package(s) we are checking against
+- `AWS_BATCH_JOB_ARRAY_INDEX` - the AWS environment variable set by the array job
+- `AWS_REGION` - The AWS region
+- `OUTPUT_S3_PATH` - The output S3 path
 
 # Local usage
 
