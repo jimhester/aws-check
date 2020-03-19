@@ -6,7 +6,7 @@ CHECK_PKG_NAME=$(sed -n ${LINE}p ${CHECK_PKG_LIST})
 
 echo "--- Starting checks for $CHECK_PKG_NAME ---"
 
-#CHECK_PKG_TARBALL=$(Rscript -e "cat(download.packages('${CHECK_PKG_NAME}', '.', repos = 'https://cloud.r-project.org')[[2]])")
+CHECK_PKG_TARBALL=$(Rscript -e "cat(download.packages('${CHECK_PKG_NAME}', '.', repos = 'https://cloud.r-project.org')[[2]])")
 
 R -e 'library("remotes", lib.loc = "/tmp/tools")' \
   -e "remotes::install_deps('${CHECK_PKG_TARBALL}', dependencies = TRUE)"
