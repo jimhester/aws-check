@@ -6,7 +6,7 @@ RUN apt-get update && \
 
 RUN pip install awscli
 
-RUN echo 'options(repos = c(CRAN = "https://demo.rstudiopm.com/all/__linux__/xenial/latest"), HTTPUserAgent = sprintf("R/%s R (%s)", getRversion(), paste(getRversion(), R.version$platform, R.version$arch, R.version$os)))' >> ~/.Rprofile
+RUN echo 'options(repos = c(RSPM = "https://demo.rstudiopm.com/all/__linux__/xenial/latest", CRAN = "https://cloud.r-project.org"), HTTPUserAgent = sprintf("R/%s R (%s)", getRversion(), paste(getRversion(), R.version$platform, R.version$arch, R.version$os)))' >> ~/.Rprofile
 
 RUN mkdir -p /tmp/tools && \
     R -e 'install.packages("remotes", lib = "/tmp/tools")'
